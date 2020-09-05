@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e # fail on any
+set -x
 
 if [ "$(id -u)" != "0" ]; then
    echo "This script must be run as root" 1>&2
@@ -15,6 +15,9 @@ USB_DIR=
 # give the system some time to fully boot
 sleep 30
 
+CONF_SEARCH="/media/*/wpa_supplicant.conf"
+
+shopt -s nullglob
 for f in /media/*/wpa_supplicant.conf
 do
     USB_DIR=$(dirname ${f})
@@ -34,10 +37,11 @@ done
 if [ ${DO_RECONFIG} = true ];
 then
     echo "Reconfiguring wifi with new wpa_supplicant"
-    sudo systemctl daemon-reload
-    systemctl restart dhcpcd
+    /usr/bin/systemctl daemon-reload
+    /usr/bin/systemctl restart dhcpcd
     sleep 5
-    wpa_cli -i wlan0 reconfigure
+    /usr/sbin/wpa_cli -i wlan0 reconfigure
+    mv -f ${USB_DIR}/wpa_supplicant.conf ${USB_DIR}/wpa_supplicant.conf.loaded
 fi
 
 echo "Waiting for full network connection"
