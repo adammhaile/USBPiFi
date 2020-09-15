@@ -15,10 +15,8 @@ USB_DIR=
 # give the system some time to fully boot
 sleep 30
 
-CONF_SEARCH="/media/*/wpa_supplicant.conf"
-
 shopt -s nullglob
-for f in /media/*/wpa_supplicant.conf
+for f in /media/*/wpa_supplicant.{txt,conf}
 do
     USB_DIR=$(dirname ${f})
     echo "Found ${f}"
@@ -41,6 +39,7 @@ then
     /usr/bin/systemctl restart dhcpcd
     sleep 5
     /usr/sbin/wpa_cli -i wlan0 reconfigure
+    mv -f ${USB_DIR}/wpa_supplicant.txt ${USB_DIR}/wpa_supplicant.txt.loaded
     mv -f ${USB_DIR}/wpa_supplicant.conf ${USB_DIR}/wpa_supplicant.conf.loaded
 fi
 
