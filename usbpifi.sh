@@ -34,13 +34,12 @@ done
 
 if [ ${DO_RECONFIG} = true ];
 then
-    echo "Reconfiguring wifi with new wpa_supplicant"
-    /usr/bin/systemctl daemon-reload
-    /usr/bin/systemctl restart dhcpcd
-    sleep 5
-    /usr/sbin/wpa_cli -i wlan0 reconfigure
+    echo "Marking USB config as loaded"
     mv -f ${USB_DIR}/wpa_supplicant.txt ${USB_DIR}/wpa_supplicant.txt.loaded
     mv -f ${USB_DIR}/wpa_supplicant.conf ${USB_DIR}/wpa_supplicant.conf.loaded
+    echo "Rebooting to reconfigure wifi"
+    
+    /usr/bin/systemctl reboot -i
 fi
 
 echo "Waiting for full network connection"
